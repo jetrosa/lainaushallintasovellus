@@ -1,0 +1,92 @@
+version: "2.4"
+services:
+  apache_login:
+    container_name: apache_login
+    build: 
+      context: ./apache_login
+      dockerfile: Dockerfile.prod
+    networks:
+      - skpbacknet
+      - skpfrontnet
+
+  client:
+    container_name: nginxfront
+    build: 
+      context: ./client
+      dockerfile: Dockerfile.prod
+    ports:
+      - '80:80'
+    depends_on:
+      - apache_login
+      - backend
+    networks:
+      - skpfrontnet
+
+  backend:
+    container_name: backend
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    environment:
+      SESSION_SECRET: sdfkj3RGjsi8
+      DB_HOST: slk-postgres-db
+      DB_DATABASE: testdb
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+    #backend piilotettu (ei julkista porttia, pääsy vain composen muiden ipalveluiden kautta)
+    #apiserverin reittejä voi kutsua frontin kautta <frontin osoite>/api (proxy käytössä nginx-serverillä) 
+    #ports:
+    #  - '3002:3002'
+    depends_on: 
+      database:
+        condition: service_healthy
+    networks:
+      - skpbacknet
+    links:
+      - database
+    restart: always
+    
+  database:
+    container_name: slk-postgres-db
+    image: postgres:14.1
+    restart: always
+    command: postgres -c datestyle='iso, dmy'
+    environment:
+      PGHOST: slk-postgres-db
+      POSTGRES_DB: testdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres  
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./db_init:/docker-entrypoint-initdb.d #scheman ja alkudatan lisäys projektikansiosta
+    networks:
+      - skpbacknet
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"] #huom. -U <POSTGRES_USER> myös tässä
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4:6.2
+    environment: 
+      PGADMIN_DEFAULT_PASSWORD: pgadmin4
+      PGADMIN_DEFAULT_EMAIL: pgadmin@pgadmin.com
+      PGADMIN_LISTEN_PORT: 8080
+    ports:
+      - 8080:8080
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on: 
+      - database
+    networks:
+      - skpbacknet
+    container_name: pgadmin4
+
+networks:
+  skpbacknet: {}
+  skpfrontnet: {}
+
+volumes:
+  db-data:
+  pgadmin-data:

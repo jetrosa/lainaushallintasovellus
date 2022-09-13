@@ -1,0 +1,88 @@
+
+Säteilylähteiden kirjanpitosovellus
+Last edited: 1/26
+Lähteistä tallennettavat tiedot
+Sovelluksessa tulee olla toiminto, jolla järjestelmään voidaan syöttää uusia säteilylähteitä. Lähteistä tallennetaan alla olevat tiedot:
+ 
+Kaikille lähteille yhteiset
+Lähteen nuklidi (tietty radioaktiivinen aine) muodossa kemiallinen merkki-massaluku (esim. Cs-137)
+Lähteen yksilöivä tunniste (valmistajan määrittämä yksilöivä tunniste, sarjanumero tms)
+Viite lähteen sertifikaatiin (pääsääntöisesti viittaus meidän dokuhallintajärjestelmään tallennettuun asiakirjaan
+Lähteen sisäinen viite (meidän antama yksilöivä tunniste)
+Lähteen normaali säilytyspaikka (esim. huoneen numero tms.)
+Lähteen normaalin säilytyspaikan tarkenne (esim. paloturvakaappi/tietty hyllypaikka tms. ko. huoneessa)
+Lähteen vastuuyksikkö
+Lähteen vastuuhenkilö
+Tietojen syöttäjä/päivittäjä
+Hankintatapa (esim. uusi lähde kotimaa, uusi lähde ulkomaa, lähteen siirto toiselta käyttäjältä)
+Lähteen käyttöikä (lähteen "viimeinen käyttöpäivä")
+(Tähän periaatteessa voisi listata myös tiedon onko lähde poistettu kirjanpidosta, ks. lähteiden poistaminen kirjanpidosta alla) 
+
+Umpilähteistä lisäksi kirjattavat tiedot
+Lähteen referenssiaktiivisuus (voitava syöttää yksiköissä Bq, MBq, Ci = 37e9 Bq)
+Aktiivisuuden referenssipäivä
+Umpilähdeluokituskoodi (esim. C66656)
+Erityismuotoisuustieto (kyllä/ei/päättynyt)
+Erityismuotoisuuden voimassaolo
+Viite erityismuotoisuuden hyväksyntätodistukseen
+
+Avolähteistä lisäksi kirjattavat tiedot
+Lähteen referenssiaktiivisuuspitoisuus (tyypillisesti Bq/ml)
+Lähteen referenssitilavuus (tyypillisesti ml)
+Lähteen tämänhetkinen tilavuus
+Aktiivisuuspitoisuuden referenssipäivä
+Tähän voi tulla vielä lisäyksiä. Tässä tällä hetkellä tallennettuja tiedot
+Lähdeluettelo
+Lähdeluettelossa näytetään taulukkomuodossa periaatteessa kaikki lähteistä tallennetut tiedot (ns. tämän hetkinen tilanne). Talukkoon pitää voida valita halutut kentät/sarakkeet (= piilottaa tarpeettomia kenttiä taulukon lukemisen helpottamiseksi) ja taulukkoa pitää voida filteröidä kenttien sisällön perusteella (esim. näytetään vain lähteet, joilla tietty vastuuyksikkö tai vastuuhenkilö jne.).  Lisäksi pitää voida hakea/suodattaa kenttien sisällön perusteella, eli esim. lähteen sarjanumerolla tms. Periaatteessa oikeastaan vapaateksti haku kaikista kentistä.
+ 
+Lähdeluetteloon lasketaan lisäksi lähteiden tämän hetkinen aktiivisuus, eli ns. puoliintumisaikakorjattu aktiivisuus. Avolähteille lasketaan myös kokonaisaktiivisuus tilavuuden ja aktiivisuuspitoisuuden perusteella. Puoliintumisaikakorjattu aktiivisuus lasketaan kaavalla:
+ 
+A(t_now) = A(t_ref) * (1/2)^((t_now-t_ref)/t_halflife)
+ 
+A(t_now): tämän hetkinen aktiivisuus(pitoisuus)
+A(t_ref): referenssiaktiivisuus(pitoisuus)
+t_now: nykyinen ajanhetki
+t_ref: referenssipäivä, jos tallennusvaiheessa ei anneta muuta aikaa, niin oletuksena käytetään aikaa 12:00:00.
+t_halflife: kyseisen nuklidin puoliintumisaika
+ 
+Puoliintumisajat toimitetaan talukkona eri nuklideille. Talukossa puoliintumisajat sekunteina. Sama kaava toimii sekä kokonaisaktiivisuudelle että aktiivisuuspitoisuudelle.
+Yksittäisen lähteen tietojen katselu ja muutoshistoria
+Lähdeluettelosta tulee voida valita lähde ja valitusta lähteestä näytetään kaikki tiedot erillisessä näkymässä. Tässä näkymässä tulee myös näkyä lähteen tietojen muutoshistoria.
+ 
+Tästä näkymästä on käytännöllistä muuttaa lähteen tietoja. Perusnäkymässä ei saa olla muokkausominaisuutta, vaan muokkaustilaan siirrytään erillisellä painikkeella tms.
+ 
+Tästä näkymästä voisi päästä myös ko. lähteen lainaamistoimintoon.
+Järjestelmän pääsynhallinta
+Järjestelmään tunnistaudutaan valtion yhteisellä VIRTU-kirjautumisella (https://wiki.eduuni.fi/pages/viewpage.action?pageId=28345567). Tässä auttaa meiltä Oscar Henriksson, joka on tehnyt toteutuksia meillä muihin järjestelmiin.
+Järjestelmässä tulee olla neljän tasoisia käyttäjiä:
+Pääkäyttäjät saavat lisätä ja poistaa järjestelmään autorisoituja käyttäjiä ja luoda uusia käyttäjäryhmiä (käytännössä lähinnä vastuuyksiköitä ks. alla)
+Muokkauskäyttäjät saavat lisätä/poistaa/muokata lähteitä
+Lainauskäyttäjä saa lainata järjestelmästä lähteitä lainaustoiminnolla, mutta eivät saa muokata lähteiden tietoja
+Katselukäyttäjät voivat vain katsella lähteiden tietoja ja niiden lainaustietoja
+Pääsyoikeuksia tulee voida jakaa yksikkökohtaisesti, eli ko. henkilö voi esimerkiksi muokata vain tietyn vastuuyksikön lähteiden tietoja tai lisätä lähteitä vain tietyille vastuuyksiköille. Tällä hetkellä yksiköitä ovat MIT, KET, YSV, LUV, JOPA ja koko osasto VALO (= oikeudet kaikkien yksiköiden tietoihin)
+ 
+Lähtökohtaisesti ylemmän tason  käyttäjällä on aina alemman tason käyttäjän oikeudet.
+Lähteiden lainaaminen ja palauttaminen
+Järjestelmästä tulee voida lainata lähteitä (yksi tai useampi), joka siis tarkoittaa sitä, että lähde siirretään sen normaalista sijoituspaikasta jonnekin muualle tai sitä käytetään kentällä (toimitalon ulkopuolella).
+ 
+Lainaustapahtumasta kirjataan seuraavat tiedot:
+Lainatut lähteet
+Lainaaja
+Lainausaika: milloin lähde on lainattu
+Arvioitu palautuaika: ei ole pakollinen, voi olla myös "toistaiseksi".
+Lähteiden suunniteltu käyttö lainauksen aikana
+Lähteiden säilytyspaikka/tapa lainauksen aikana
+Lähteiden palautuksen yhteydessä kirjataan ylös myös totetunut palautusaika.
+ 
+Palautuksen voi tehdä lähteen lainannut käyttäjä tai järjestelmän pääkäyttäjä. Lähteen palauttaja kirjataan myös lainauksen tietoihin.
+ 
+Sovellus asennetaan sellaiselle palvelimelle josta on pääsy sähköpostipalvelimelle. Järjestelmässä tulisi olla toiminnallisuus, joka mahdollistaa lähteiden palauttamisesta muistutusviestien lähettämisen. Viestejä voisi olla mahdollista lähettää käyttöliitymästä manuaalisesti ja toisaalta automaatisesti esim. kerran viikossa arvioidun palautuspäivän jälkeen tai kuukauden kulttua lainaamisesta, jos arvioitua palautusaikaa ei ole annettu.
+ 
+Lähteiden poistaminen
+Lähteitä pitää pystyä myös poistamaan kirjanpidosta. Lähteiden tulee kuitenkin jäädä järjestelmään ja ne pitää pystyä listaamaan erikikseen. Lähteen poistosta kirjataan seuraavast tiedot:
+Poistoaika
+Poistotapa
+Normaali jäte (esimerkiksi lyhytikäisestä lähteestä on radioaktiivisuus puoliintunut pois)
+Radioaktiivinen jäte. Tässä tapauksessa kirjataan lisätietona mihin jäte on toimitettu
+Siirto toiselle luvanhaltijalle. Tässä tapauksessa kirjataan lisätietona uuden haltijan nimi ja/tai turvallisuusluvan numero
+Poistokirjauksen tekijä

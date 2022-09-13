@@ -1,0 +1,24 @@
+# The Base Image used to create this Image
+FROM httpd:2.4.51
+
+# to Copy a file named httpd.conf from present working directory to the /usr/local/apache2/conf inside the container
+# I have taken the Standard httpd.conf file and enabled the necassary modules and adding Support for an additional Directory
+COPY httpd.conf /usr/local/apache2/conf/httpd.conf
+
+# This is the Additional Directory where we are going to keep our Virtualhost configuraiton files
+# You can use the image to create N number of different virtual hosts
+RUN mkdir -p /usr/local/apache2/conf/sites/
+
+# TODO: poistetaan. TESTIKÄYTTÖÖN käyttäjätunnustiedot tiedostosta, salasana (hash/Bcrypt) generoitu valmiiksi
+# käyttäjätunnuksia: 'admin', 'test1', 'test2', 'test3', 'test4', 'test5'
+# salasana kaikilla: 'password'
+COPY .htpasswd /etc/apache2/.htpasswd
+
+COPY vhost.conf /usr/local/apache2/conf/sites/vhost.conf
+
+# To tell docker to expose this port
+#EXPOSE 81
+
+# The Base command, This command should be used to start the container
+# Remember, A Container is a Process.As long as the base process (started by base cmd) is live the Container will be ALIVE.
+CMD ["httpd", "-D", "FOREGROUND"]

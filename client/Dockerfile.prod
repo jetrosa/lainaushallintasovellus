@@ -1,0 +1,19 @@
+# pull official base image
+FROM node:16.13.1-alpine3.13 as build
+
+# set working directory
+WORKDIR /usr/src/app
+
+COPY package.json ./
+COPY package-lock.json ./
+RUN npm install
+COPY . ./
+RUN npm run build
+
+# production env
+FROM nginx:stable-alpine
+COPY --from=build /usr/src/app/build /usr/share/nginx/html
+COPY --from=build /usr/src/app/nginx/nginx.conf /etc/nginx/conf.d/default.conf
+# Open port 80
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
